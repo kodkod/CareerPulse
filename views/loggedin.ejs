@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CV Generator - Logged In</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  <h1>Welcome, <%= user.displayName %>!</h1>
+  <p>Click the button below to generate your CV.</p>
+  <form action="/generate-cv" method="post">
+    <button type="submit">Generate CV</button>
+  </form>
+  <script>
+    window.opener.sessionStorage.setItem('loggedIn', 'true');
+    window.close();
+  </script>  
+</body>
+</html>
