@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
+const generateCV = require('../generateCV');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'CV Generator' });
 });
 router.get('/loggedin', function(req, res, next) {
-  console.log(req.user);
+  //console.log(req.user);
   if (req.isAuthenticated()) {
     res.render('loggedin', { user: req.user });
   } else {
@@ -15,10 +17,17 @@ router.get('/loggedin', function(req, res, next) {
 });
 router.get('/results', function(req, res, next) {
   if (req.isAuthenticated()) {
-    res.render('results', { user: req.user, generatedCV: req.generatedCV });
+    const generatedCV = req.session.generatedCV;
+    res.render('results', { user: req.user, generatedCV: generatedCV });
   } else {
     res.redirect('/');
   }
+});
+
+
+router.post('/store-cv', function(req, res, next) {
+  req.session.generatedCV = req.body.generatedCV;
+  res.status(200).send();
 });
 
 router.post('/generate-cv', async function(req, res, next) {
@@ -27,27 +36,20 @@ router.post('/generate-cv', async function(req, res, next) {
     return;
   }
 
-  // Call the OpenAI API here to generate the CV.
+  const cvText = req.body['cv-text'];
+
+  if (!cvText) {
+    res.status(400).send("CV text is required");
+    return;
+  }
+
+  console.log("here");
   try {
-    const openai = require('openai');
-    openai.apiKey = process.env.OPENAI_API_KEY;
-
-    const prompt = `Generate a CV based on the following LinkedIn data:\n\n${JSON.stringify(req.user, null, 2)}\n\nGenerated CV:\n`;
-
-    const response = await openai.Completion.create({
-      engine: 'text-davinci-002',
-      prompt: prompt,
-      max_tokens: 150,
-      n: 1,
-      stop: null,
-      temperature: 0.8,
-    });
-
-    req.generatedCV = response.choices[0].text.trim();
-    res.redirect('/results');
+    const generatedCV = await generateCV(cvText);
+    res.render('results', { user: req.user, generatedCV: generatedCV });
   } catch (error) {
-    console.error('Error generating CV:', error);
-    res.redirect('/loggedin');
+    console.error(error);
+    res.status(500).json({ error: 'Failed to generate CV' });
   }
 });
 

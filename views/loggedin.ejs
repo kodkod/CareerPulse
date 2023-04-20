@@ -5,14 +5,43 @@
   <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-  <h1>Welcome, <%= user.displayName %>!</h1>
-  <p>Click the button below to generate your CV.</p>
-  <form action="/generate-cv" method="post">
-    <button type="submit">Generate CV</button>
-  </form>
+  <div class="container">
+    <h1>Welcome, <%= user.firstName %>!</h1>
+    <p>Please paste your CV or LinkedIn Positions below:</p>
+    <form action="/generate-cv" method="post">
+      <textarea name="cv-text" id="cv-text" rows="10" cols="80" required></textarea>
+      <br>
+      <input type="submit" value="Generate CV" class="btn btn-primary">
+    </form>
+  </div>  
   <script>
-    window.opener.sessionStorage.setItem('loggedIn', 'true');
-    window.close();
+    if (window.opener) {
+      window.opener.sessionStorage.setItem('loggedIn', 'true');
+      window.close();
+    }
+  </script>  
+  <script>
+    // document.getElementById('generate-cv').addEventListener('click', async function() {
+    //   const response = await fetch('/generate-cv', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     credentials: 'same-origin'
+    //   });
+  
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     await fetch('/store-cv', {
+    //       method: 'POST',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       credentials: 'same-origin',
+    //       body: JSON.stringify({ generatedCV: data.cv }),
+    //     });
+
+    //     window.location.href = '/results';
+    //   } else {
+    //     alert('Failed to generate CV');
+    //   }
+    // });
   </script>  
 </body>
 </html>

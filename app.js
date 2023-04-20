@@ -10,7 +10,7 @@ const passport = require('passport');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-// var authRouter = require('./routes/linkedin');
+
 
 var router = express.Router();
 
@@ -45,8 +45,7 @@ app.use('/users', usersRouter);
 
 /* GET users listing. */
 app.get('/auth/linkedin',
-  passport.authenticate('linkedin')
-);
+  passport.authenticate('linkedin', { scope: ['r_liteprofile'] }));
 
 app.get('/auth/linkedin/callback',
 passport.authenticate('linkedin', { failureRedirect: '/login' }),
@@ -73,18 +72,28 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new LinkedInStrategy({
     clientID: '77g8fczm492lf6',
     clientSecret: 'G6qAVsHHFPtobk0A',
-    profileFields: ['id', 'first-name', 'last-name', 'email-address', 'headline'],
+    profileFields: ['id', 'first-name', 'last-name', 'email-address', 'headline', 'r_fullprofile'],
     callbackURL: 'http://localhost:3000/auth/linkedin/callback'    
   },
-  function(token, tokenSecret, profile, done) {
+  function(accessToken, refreshToken, profile, done) {
     // Save the user's LinkedIn data to the database here.
-    console.log(token);
-    console.log|(tokenSecret);
-    console.log(profile);
+
+    profile.accessToken = accessToken;
+    
+    // console.log(profile);
 
     return done(null, profile);
   }
 ));
+
+function ensureAuthenticated(req, res, next) {
+  console.log("a");
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    res.redirect('/');
+  }
+}
 
 
 

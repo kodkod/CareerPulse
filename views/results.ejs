@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>CV Generator - Results</title>
-  <link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-  <h1>Generated CV for <%= user.firstName %></h1>
-  <pre><%= generatedCV %></pre>
-  <a href="/loggedin">Go back</a>
-</body>
+  <head>
+    <title>Generated CV</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Your New CV</h1>
+      <pre><%= generatedCV %></pre>
+      <a href="/loggedin" class="btn btn-primary">Go back</a>
+    </div>
+  </body>
 </html>
